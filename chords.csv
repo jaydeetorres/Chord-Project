@@ -1,8 +1,8 @@
 ﻿Key,ii,iii,IV,V,vi,vii
-A,B,C#,D,E,F#,G#
-B,C#,D#,E,F#,G#,A#
-C,D,E,F,G,A,B
-D,E,F#,G,A,B,C#
-E,F#,G#,A,B,C#,D#
-F,G,A,Bb,C,D,E
-G,A,B,C,D,E,F#
+A,Bm,C#m,D,E,F#m,G#
+B,C#m,D#m,E,F#,G#m,A#
+C,Dm,Em,F,G,Am,B
+D,Em,F#m,G,A,Bm,C#
+E,F#m,G#m,A,B,C#m,D#
+F,Gm,Am,Bb,C,Dm,E
+G,Am,Bm,C,D,Em,F#

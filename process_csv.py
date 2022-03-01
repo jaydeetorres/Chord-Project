@@ -1,10 +1,15 @@
-import pandas as pd
+import csv
+import chord_backend as chord
 
-def process_csv(path):
-    full_path = "r'" + path + "'"
-    data = pd.read_csv(full_path)
-    print(data)
+def process_csv(file_name):
+    chords = {}
 
-if __name__ == "__main__":
-    path = "C:\Users\torrjond\Desktop\chords.csv"
-    process_csv(path)
+    with open (file_name) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter = ",")
+        line_count = 0
+        for row in csv_reader:
+            if line_count != 0:
+                chords.update({row[0]: chord.Chord(row[0], row[1], row[2], row[3], row[4], row[5], row[6])})             
+            line_count += 1
+    
+    return chords
