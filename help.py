@@ -1,0 +1,2 @@
+# Just a holder for the help page text
+help_text = "Welcome to Chord Buddy!\nTo use this program, choose a key and a mood. The program will then generate a chord progression that you can use in your music\nNot sure what to pick? Try the randomize button!"

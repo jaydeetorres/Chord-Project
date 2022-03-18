@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import process_csv
 import microservice_request as rng
+from help import help_text
 
 chords = process_csv.process_csv('chords.csv')
 
@@ -10,8 +11,11 @@ progressions = {
     "Hopeful": ["iv", "v", "vi", "i"]
 }
 
+last_progression = ()
+
 sg.theme('DarkBlue')
 
+# The create functions are the functions to create each window
 def createExit():
     exit_layout = [[sg.Text("Are you sure you would like to exit?")],
             [sg.Button("Yes"), sg.Button("No")]]
@@ -25,20 +29,27 @@ def createError():
     return error_window
 
 def createMain():
-    layout = [[sg.OptionMenu(["Guitar", "Piano", "Help"])],
-            [sg.Button("Randomize Options")],
+    layout = [[sg.Button("Randomize Options"), sg.Button("Need help?")],
             [sg.Text("Key: "), sg.Combo(list(chords.keys()), key = "chord", enable_events = True), sg.Text("Mood: "), sg.Combo(list(progressions.keys()), key = "mood")],
             [sg.Button('Generate Chord Progression'), sg.Button('Exit')],
-            [sg.Text('Scale: '), sg.Text(key = '-CHORD-'), sg.Text('Mood: '), sg.Text(key = '-MOOD-')],
-            [sg.Text('Your chord progression here:'), sg.Text(size=(15,1), key='-OUTPUT-')]]
+            [sg.Button('See last progression')]]
     window = sg.Window('Chord Buddy', layout)
     return window
 
-def updateProgression(chord, mood, window):
-    prog = chords.get(chord).make_progression(progressions[mood])
-    window['-CHORD-'].update(chord)
-    window['-MOOD-'].update(mood)
-    window['-OUTPUT-'].update(prog)
+def createHelp():
+    layout = [[sg.Text(help_text)]]
+    window = sg.Window("Help?", layout)
+    return window
+
+def createProgressionWindow(chords, key, mood):
+    c1 = 'C:/Users/torrjond\OneDrive - Oregon State University/CS361/Chord Project/Chord Images/' + chords[0] + '.PNG'
+    c2 = 'C:/Users/torrjond\OneDrive - Oregon State University/CS361/Chord Project/Chord Images/' + chords[1] + '.PNG'
+    c3 = 'C:/Users/torrjond\OneDrive - Oregon State University/CS361/Chord Project/Chord Images/' + chords[2] + '.PNG'
+    c4 = 'C:/Users/torrjond\OneDrive - Oregon State University/CS361/Chord Project/Chord Images/' + chords[3] + '.PNG'
+    layout = [[sg.Text("Key: " + key), sg.Text("Mood: " + mood)],
+            [sg.Image(c1)], [sg.Image(c2)], [sg.Image(c3)], [sg.Image(c4)]]
+    window = sg.Window('CHORDS', layout)
+    return window
 
 exit = False
 
@@ -47,6 +58,7 @@ window = createMain()
 while not exit: 
     event, values = window.read()
     
+    # Event triggers on the different buttons - Titles are pretty self explanatory
     if event == 'Generate Chord Progression':
         if values['mood'] == '' or values['chord'] == '':
             error_window = createError()
@@ -56,18 +68,30 @@ while not exit:
                     error_window.close()
                     break
         else:
-            updateProgression(values['chord'], values['mood'], window)
+            chord_list = chords.get(values['chord']).make_progression(progressions[values['mood']])
+            last_progression = (chord_list, values['chord'], values['mood'])
+            chord_window = createProgressionWindow(chord_list, values['chord'], values['mood'])
+            chord_event, chord_values = chord_window.read()
 
     if event == 'Randomize Options':
         try:
-            chord_rand = rng.rng(len(chords)-1)
-            prog_rand = rng.rng(len(progressions)-1)
-            values['chord'] = list(chords)[chord_rand]
-            values['mood'] = list(progressions)[prog_rand]
-            updateProgression(values['chord'], values['mood'], window)
+            values['chord'] = list(chords)[rng.rng(len(chords)-1)]
+            values['mood'] = list(progressions)[rng.rng(len(progressions)-1)]
+            chord_list = chords.get(values['chord']).make_progression(progressions[values['mood']])
+            last_progression = (chord_list, values['chord'], values['mood'])
+            chord_window = createProgressionWindow(chord_list, values['chord'], values['mood'])
+            chord_event, chord_values = chord_window.read()
 
         except:
             print("Error: Microservice server not found")
+    
+    if event == 'Need help?':
+        help_window = createHelp()
+        help_event, help_values = help_window.read()
+
+    if event == 'See last progression':
+        chord_window = createProgressionWindow(last_progression[0], last_progression[1], last_progression[2])
+        chord_event, chord_values = chord_window.read()
     
     if event == sg.WIN_CLOSED:
         break

@@ -1,4 +1,4 @@
-# importing the requests library
+# used to access random number from teammates microservice
 import requests
 
 def rng(limit = None):

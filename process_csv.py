@@ -1,6 +1,7 @@
 import csv
 import chord_backend as chord
 
+# Processes csv file into chord object
 def process_csv(file_name):
     chords = {}
 
